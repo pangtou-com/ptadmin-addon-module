@@ -1,0 +1,33 @@
+{
+    "id": "your-plugin",
+    "code": "your-plugin",
+    "name": "示例插件",
+    "version": "0.1.0",
+    "enabled": true,
+    "kind": "module",
+    "runtime": "federation",
+    "routeBase": "/your-plugin",
+    "meta": {
+        "icon": "Grid",
+        "description": "用于演示模块插件脚手架的最小实现。",
+        "order": 100,
+        "develop": true,
+        "preload": false
+    },
+    "entry": {
+        "federation": {
+            "remote": "your_plugin_remote",
+            "entry": "http://localhost:4179/assets/remoteEntry.js",
+            "expose": "./module"
+        }
+    },
+    "capabilities": {
+        "routes": true,
+        "pages": true,
+        "widgets": false,
+        "settings": false
+    },
+    "compatibility": {
+        "console": ">=0.1.0"
+    }
+}
