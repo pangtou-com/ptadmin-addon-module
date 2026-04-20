@@ -14,6 +14,7 @@ const mockHostSDK = defineHostSdk({
     },
     request: {
         raw: async <T>(config: Record<string, any>) => config as T,
+        sse: async () => [],
         get: async <T>() => ({ code: 0, data: [] }) as T,
         post: async <T>() => ({ code: 0, message: '操作成功' }) as T,
         put: async <T>() => ({ code: 0, message: '操作成功' }) as T,
