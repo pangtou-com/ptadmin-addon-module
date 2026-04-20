@@ -4,8 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
 
 const federationSharedPackages = [
-    'vue',
-    '@pangtou/engine',
+    'vue',    
     '@pangtou/shared',
     '@pangtou/host-sdk',
     '@pangtou/module-runtime',
