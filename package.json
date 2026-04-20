@@ -1,6 +1,6 @@
 {
     "name": "@pangtou-addon/your-addon",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "type": "module",
     "files": [
@@ -24,9 +24,9 @@
         "pack": "node ./scripts/pack.mjs"
     },
     "dependencies": {
-        "@pangtou/host-sdk": "0.1.1",
-        "@pangtou/module-runtime": "0.1.1",
-        "@pangtou/shared": "0.1.1",
+        "@pangtou/host-sdk": "0.1.2",
+        "@pangtou/module-runtime": "0.1.2",
+        "@pangtou/shared": "0.1.2",
         "vue": "^3.5.29"
     },
     "devDependencies": {

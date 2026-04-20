@@ -2,7 +2,7 @@
     "id": "your-plugin",
     "code": "your-plugin",
     "name": "示例插件",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "enabled": true,
     "kind": "module",
     "runtime": "federation",
@@ -28,6 +28,6 @@
         "settings": false
     },
     "compatibility": {
-        "console": ">=0.1.1"
+        "console": ">=0.1.2"
     }
 }
