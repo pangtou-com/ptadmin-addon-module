@@ -12,5 +12,5 @@ import './styles/index.scss'
  * 3. 挂载一个轻量预览页，而不是依赖主应用壳
  */
 const app = createApp(App)
-bootstrap(app, pluginModulePreview.sdk)
+bootstrap(pluginModulePreview.sdk)
 app.mount('#app')

@@ -1,5 +1,5 @@
 import { defineHostSdk } from '@pangtou/host-sdk'
-import { pluginModule } from '../module'
+import { pluginModule } from './module'
 
 /**
  * 独立开发时使用的 mock 宿主。

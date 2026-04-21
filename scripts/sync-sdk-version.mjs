@@ -8,6 +8,7 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')
 const packageJsonPath = path.join(projectRoot, 'package.json')
 const frontendManifestPath = path.join(projectRoot, 'frontend.json')
+const projectManifestPath = path.join(projectRoot, 'manifest.json')
 
 const sdkPackageNames = [
     '@pangtou/host-sdk',
@@ -44,20 +45,12 @@ function assertVersion(version) {
     }
 }
 
-function readPackageJson() {
-    return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+function readJSON(filePath) {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
 }
 
-function writePackageJson(value) {
-    fs.writeFileSync(packageJsonPath, `${JSON.stringify(value, null, 4)}\n`, 'utf8')
-}
-
-function readFrontendManifest() {
-    return JSON.parse(fs.readFileSync(frontendManifestPath, 'utf8'))
-}
-
-function writeFrontendManifest(value) {
-    fs.writeFileSync(frontendManifestPath, `${JSON.stringify(value, null, 4)}\n`, 'utf8')
+function writeJSON(filePath, value) {
+    fs.writeFileSync(filePath, `${JSON.stringify(value, null, 4)}\n`, 'utf8')
 }
 
 function updateDependencyVersions(manifest, version) {
@@ -77,7 +70,7 @@ function updateDependencyVersions(manifest, version) {
     return changed
 }
 
-function updateTemplateVersion(packageJson, frontendManifest, version) {
+function updateTemplateVersion(packageJson, frontendManifest, projectManifest, version) {
     let changed = false
 
     if (packageJson.version !== version) {
@@ -87,6 +80,11 @@ function updateTemplateVersion(packageJson, frontendManifest, version) {
 
     if (frontendManifest.version !== version) {
         frontendManifest.version = version
+        changed = true
+    }
+
+    if (projectManifest.version !== version) {
+        projectManifest.version = version
         changed = true
     }
 
@@ -113,18 +111,20 @@ function main() {
 
     assertVersion(version)
 
-    const packageJson = readPackageJson()
-    const frontendManifest = readFrontendManifest()
+    const packageJson = readJSON(packageJsonPath)
+    const frontendManifest = readJSON(frontendManifestPath)
+    const projectManifest = readJSON(projectManifestPath)
     const dependencyChanged = updateDependencyVersions(packageJson, version)
-    const versionChanged = updateTemplateVersion(packageJson, frontendManifest, version)
+    const versionChanged = updateTemplateVersion(packageJson, frontendManifest, projectManifest, version)
 
     if (!dependencyChanged && !versionChanged) {
         console.log(`[sync-sdk-version] already up to date: ${version}`)
         return
     }
 
-    writePackageJson(packageJson)
-    writeFrontendManifest(frontendManifest)
+    writeJSON(packageJsonPath, packageJson)
+    writeJSON(frontendManifestPath, frontendManifest)
+    writeJSON(projectManifestPath, projectManifest)
     console.log(`[sync-sdk-version] updated template version and sdk dependencies to ${version}`)
 }
 

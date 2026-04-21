@@ -1,6 +1,6 @@
-import { defineHostSdk } from '@pangtou/host-sdk'
+import { bootstrap } from './bootstrap'
 import type { ModuleApplication } from '@pangtou/module-runtime'
-import { pluginModule } from '../module'
+import { pluginModule } from './module'
 
 /**
  * 远端挂载入口。
@@ -10,7 +10,7 @@ export function createPluginModuleApplication(): ModuleApplication {
     return {
         module: pluginModule,
         mount(props) {
-            defineHostSdk(props.sdk)
+            bootstrap(props.sdk)
         },
         unmount() {
             return

@@ -5,7 +5,7 @@
 适合这类场景：
 
 - 需要挂到 `console` 后台菜单中的业务模块
-- 需要输出 `routes / pages / widgets`
+- 需要输出 `pages / widgets`
 - 需要通过宿主 `Host SDK` 复用认证、请求、通知、路由、标签等能力
 - 需要以 `federation remote` 方式提供给宿主加载
 
@@ -16,27 +16,51 @@
 这个模板产出的插件，核心上是两部分：
 
 1. 模块注册能力
-通过 `module` 协议向宿主输出 `routes / pages / widgets`
+通过 `module` 协议向宿主输出 `pages / widgets`
 
 2. 前端清单能力
 通过 `frontend.json` 告诉宿主这个插件如何被识别、加载和装配
 
+其中公共元数据只维护一份：
+
+- `manifest.json`
+  作为插件公共元数据唯一来源，前后端共享 `code / name / version / description / type`
+
+- `frontend.config.json`
+  只维护前端宿主加载所需的运行时配置
+
+- `frontend.json`
+  由脚本根据 `manifest.json + frontend.config.json` 自动同步生成，不再手工维护
+
+模块模板不再自己维护菜单路由树。
+页面入口由插件通过 `pages` 暴露，最终菜单、层级和可见性由宿主资源树决定。
+
 所以开发时要同时关注：
 
 - 你的业务页面和模块代码
-- `frontend.json`
+- `manifest.json`
+- `frontend.config.json`
 - `vite.config.ts` 中的 federation remote 配置
 
 ## 目录结构
 
+- `manifest.json`
+  插件公共元数据源。前端模块标题、版本、描述和宿主清单公共字段都从这里派生。
+
+- `frontend.config.json`
+  前端加载配置源。这里只放 runtime、routeBase、entry、icon、capabilities 等前端专属字段。
+
 - `frontend.json`
-  前端插件清单。宿主识别插件时依赖这份文件。
+  自动生成的前端插件清单。宿主识别插件时依赖这份文件。
 
-- `src/module/`
-  模块元数据入口。宿主通过这里读取 `routes / pages / widgets`
+- `src/module.ts`
+  模块元数据入口。宿主通过这里读取 `pages / widgets`
 
-- `src/routes/`
-  路由定义
+- `src/app-entry.ts`
+  完整模块应用入口。宿主需要在挂载时注入 SDK 时使用它
+
+- `src/bootstrap.ts`
+  模块运行时初始化入口，统一处理 Host SDK 注入
 
 - `src/pages/`
   页面组件和页面注册项
@@ -50,17 +74,17 @@
 - `src/api/`
   业务请求封装
 
-- `src/dev/`
+- `src/dev.ts`
   本地 mock 宿主，用于独立开发
-
-- `src/exposes/`
-  federation 暴露入口
 
 - `vite.config.ts`
   remote 构建配置
 
+- `scripts/manifest-sync.mjs`
+  根据 `manifest.json + frontend.config.json` 自动同步 `frontend.json`
+
 - `scripts/manifest-check.mjs`
-  校验 `frontend.json`
+  校验清单结构与同步结果
 
 - `scripts/pack.mjs`
   打包发布包
@@ -79,34 +103,35 @@ pnpm install
 pnpm dev
 ```
 
-此时走的是 `src/dev/` 里的 mock host，不依赖真实宿主。
+此时走的是 `src/dev.ts` 里的 mock host，不依赖真实宿主。
+执行 `pnpm dev / build / check:types / pack` 时，模板会先自动同步一次 `frontend.json` 和 `package.json.version`。
 
 ### 3. 先改这几个地方
 
 创建插件后，优先检查这些文件：
 
 1. `package.json`
-   确认包名、版本
+   确认包名
 
-2. `frontend.json`
+2. `manifest.json`
    确认：
-   - `id`
    - `code`
    - `name`
+   - `version`
+   - `description`
+   - `type`
+
+3. `frontend.config.json`
+   确认：
    - `routeBase`
+   - `runtime`
    - `entry.federation.remote`
    - `entry.federation.entry`
 
-3. `src/module/index.ts`
-   确认模块名、标题、权限编码
-
-4. `src/routes/index.ts`
-   替换模板默认路由
-
-5. `src/pages/index.ts`
+4. `src/pages/index.ts`
    替换模板默认页面注册项，按需设置 `schemaKey`
 
-6. `vite.config.ts`
+5. `vite.config.ts`
    确认 federation `name` 与 `frontend.json.entry.federation.remote` 一致
 
 ### 4. 再开始写业务
@@ -124,7 +149,7 @@ pnpm dev
 模块型插件联调的目标是确认：
 
 - 宿主能加载 remote
-- 路由能打开
+- 宿主能把资源树正确映射到页面
 - 页面能显示
 - `Host SDK` 能正常工作
 
@@ -145,13 +170,13 @@ pnpm preview
 
 ### 3. 把 `frontend.json` 注册到宿主
 
-当前阶段仍然是手动联调，所以需要把你的 `frontend.json` 内容登记到宿主 manifest 注册表。
+当前阶段仍然是手动联调，所以需要把自动生成的 `frontend.json` 内容登记到宿主 manifest 注册表。
 
-### 4. 访问宿主里的路由
+### 4. 在宿主里配置资源并访问页面
 
 检查：
 
-- 菜单和路由是否正确
+- 菜单资源是否正确绑定到 `module + page_key`
 - 页面是否正常渲染
 - 通知、确认框、标签页、路由跳转是否可用
 - 请求是否通过 `Host SDK` 正常透传
@@ -174,6 +199,8 @@ pnpm manifest:check
 
 它会校验：
 
+- `manifest.json` 是否结构正确
+- `frontend.config.json` 是否可生成有效清单
 - `frontend.json` 是否结构正确
 - `kind` 是否为 `module`
 - `runtime` 是否合理
@@ -194,7 +221,7 @@ pnpm build
 - 页面内调用 `sdk.request`
 - 页面内调用 `sdk.ui`
 - 页面内调用 `sdk.router`
-- 路由切换后页面无异常
+- 页面切换后无异常
 
 ## 四、打包流程
 
@@ -220,6 +247,7 @@ release/your-plugin-0.1.0.zip
 压缩包中默认包含：
 
 - `dist/`
+- `manifest.json`
 - `frontend.json`
 - `package.json`
 - `README.md`
@@ -230,6 +258,7 @@ release/your-plugin-0.1.0.zip
 至少要保证下面这些内容是正确的：
 
 - 打包产物 `.zip`
+- `manifest.json`
 - `frontend.json`
 - 正确的插件版本号
 - 正确的 `code`
@@ -241,6 +270,7 @@ release/your-plugin-0.1.0.zip
 ## 六、常用命令
 
 ```bash
+pnpm manifest:sync
 pnpm dev
 pnpm check:types
 pnpm build
@@ -256,6 +286,8 @@ pnpm pack
 - 不要把宿主私有实现拷进插件
 - 页面请求统一收口到 `src/api/`
 - federation remote 名称和 `frontend.json` 必须保持一致
+- 页面注册项中的 `module` 和 `key` 要与宿主资源配置保持一致
+- 权限判断来源于后端返回的资源树，不再通过模块定义单独声明
 
 ## 八、什么时候不该用这个模板
 
@@ -263,6 +295,6 @@ pnpm pack
 
 - 插件本身是一整套独立系统
 - 插件需要以 `wujie` 子应用方式挂载
-- 插件不打算输出模块页面、schema、widget
+- 插件不打算输出模块页面或 widget
 
 这些情况请改用 `plugin-micro-app` 模板。

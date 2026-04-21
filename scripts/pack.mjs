@@ -3,14 +3,11 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { parseFrontendManifest } from './frontend-manifest.mjs'
+import { readJSON, syncManifestFiles } from './project-manifest.mjs'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')
 const releaseRoot = path.join(projectRoot, 'release')
-
-function readJSON(relativePath) {
-    return JSON.parse(fs.readFileSync(path.join(projectRoot, relativePath), 'utf-8'))
-}
 
 function copyDirectory(sourceDir, targetDir) {
     fs.mkdirSync(targetDir, { recursive: true })
@@ -45,7 +42,9 @@ function fail(message) {
 }
 
 function main() {
+    syncManifestFiles()
     const packageJSON = readJSON('package.json')
+    const pluginManifest = readJSON('manifest.json')
     const manifest = parseFrontendManifest(readJSON('frontend.json'))
     const packageManager = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 
@@ -66,6 +65,7 @@ function main() {
     fs.mkdirSync(stageDir, { recursive: true })
 
     copyDirectory(path.join(projectRoot, 'dist'), path.join(stageDir, 'dist'))
+    fs.copyFileSync(path.join(projectRoot, 'manifest.json'), path.join(stageDir, 'manifest.json'))
     fs.copyFileSync(path.join(projectRoot, 'frontend.json'), path.join(stageDir, 'frontend.json'))
     fs.copyFileSync(path.join(projectRoot, 'package.json'), path.join(stageDir, 'package.json'))
     fs.copyFileSync(path.join(projectRoot, 'README.md'), path.join(stageDir, 'README.md'))
@@ -75,6 +75,7 @@ function main() {
             code: manifest.code,
             name: manifest.name,
             version: packageJSON.version,
+            description: pluginManifest.description || '',
             kind: manifest.kind,
             runtime: manifest.runtime,
             packedAt: new Date().toISOString(),

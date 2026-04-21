@@ -1,10 +1,12 @@
 {
     "name": "@pangtou-addon/your-addon",
-    "version": "0.1.2",
+    "version": "0.1.4",
     "private": true,
     "type": "module",
     "files": [
         "README.md",
+        "manifest.json",
+        "frontend.config.json",
         "frontend.json",
         "index.html",
         "package.json",
@@ -15,18 +17,19 @@
         "types"
     ],
     "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview --host 0.0.0.0 --port 4179 --strictPort",
-        "check:types": "vue-tsc --noEmit -p tsconfig.json",
+        "manifest:sync": "node ./scripts/manifest-sync.mjs",
+        "dev": "pnpm run manifest:sync && vite",
+        "build": "pnpm run manifest:sync && vite build",
+        "preview": "pnpm run manifest:sync && vite preview --host 0.0.0.0 --port 4179 --strictPort",
+        "check:types": "pnpm run manifest:sync && vue-tsc --noEmit -p tsconfig.json",
         "manifest:check": "node ./scripts/manifest-check.mjs",
         "sync:sdk-version": "node ./scripts/sync-sdk-version.mjs",
         "pack": "node ./scripts/pack.mjs"
     },
     "dependencies": {
-        "@pangtou/host-sdk": "0.1.2",
-        "@pangtou/module-runtime": "0.1.2",
-        "@pangtou/shared": "0.1.2",
+        "@pangtou/host-sdk": "0.1.4",
+        "@pangtou/module-runtime": "0.1.4",
+        "@pangtou/shared": "0.1.4",
         "vue": "^3.5.29"
     },
     "devDependencies": {
@@ -36,5 +39,6 @@
         "typescript": "^5.8.3",
         "vite": "^7.3.2",
         "vue-tsc": "^3.1.0"
-    }
+    },
+    "description": "用于演示模块插件脚手架的最小实现。"
 }

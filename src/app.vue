@@ -14,11 +14,11 @@
 
         <section class="meta-grid">
             <article class="meta-card">
-                <h2>Routes</h2>
+                <h2>Pages</h2>
                 <ul>
-                    <li v-for="route in preview.module.routes || []" :key="route.path">
-                        <strong>{{ route.title }}</strong>
-                        <span>{{ route.path }}</span>
+                    <li v-for="page in pageList" :key="page.path">
+                        <strong>{{ page.title }}</strong>
+                        <span>{{ page.path }}</span>
                     </li>
                 </ul>
             </article>

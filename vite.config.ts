@@ -22,8 +22,8 @@ export default defineConfig({
             name: 'your_plugin_remote',
             filename: 'remoteEntry.js',
             exposes: {
-                './module': './src/exposes/module.ts',
-                './app': './src/exposes/app-entry.ts',
+                './module': './src/module.ts',
+                './app': './src/app-entry.ts',
             },
             shared: [...federationSharedPackages],
         }),
