@@ -1,5 +1,5 @@
 import type { Module } from '@pangtou/module-runtime'
-import addonManifest from '../manifest.json'
+import addonManifest from '../../manifest.json'
 import { pluginModulePages } from './pages'
 import { pluginModuleWidgets } from './widgets'
 

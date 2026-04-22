@@ -16,9 +16,9 @@
             <article class="meta-card">
                 <h2>Pages</h2>
                 <ul>
-                    <li v-for="page in pageList" :key="page.path">
-                        <strong>{{ page.title }}</strong>
-                        <span>{{ page.path }}</span>
+                    <li v-for="page in pageList" :key="page.key">
+                        <strong>{{ page.key }}</strong>
+                        <span>{{ page.module }}</span>
                     </li>
                 </ul>
             </article>
@@ -27,7 +27,7 @@
                 <h2>Schema Pages</h2>
                 <ul>
                     <li v-for="page in pageList.filter((item) => item.schemaKey)" :key="page.key">
-                        <strong>{{ page.title }}</strong>
+                        <strong>{{ page.key }}</strong>
                         <span>{{ page.schemaKey }}</span>
                     </li>
                 </ul>
@@ -44,7 +44,7 @@
                     :class="{ active: page.key === activePageKey }"
                     @click="activePageKey = page.key"
                 >
-                    {{ page.title }}
+                    {{ page.key }}
                 </button>
             </div>
 

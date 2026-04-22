@@ -24,7 +24,9 @@
         "check:types": "pnpm run manifest:sync && vue-tsc --noEmit -p tsconfig.json",
         "manifest:check": "node ./scripts/manifest-check.mjs",
         "sync:sdk-version": "node ./scripts/sync-sdk-version.mjs",
-        "pack": "node ./scripts/pack.mjs"
+        "pack": "node ./scripts/pack.mjs",
+        "dev:remote:build": "vite build --watch",
+        "dev:remote:serve": "vite preview --port 4179 --strictPort"
     },
     "dependencies": {
         "@pangtou/host-sdk": "0.1.4",
