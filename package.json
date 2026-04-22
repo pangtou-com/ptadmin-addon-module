@@ -1,6 +1,6 @@
 {
     "name": "@pangtou-addon/your-addon",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "private": true,
     "type": "module",
     "files": [
@@ -29,9 +29,9 @@
         "dev:remote:serve": "vite preview --port 4179 --strictPort"
     },
     "dependencies": {
-        "@pangtou/host-sdk": "0.1.4",
-        "@pangtou/module-runtime": "0.1.4",
-        "@pangtou/shared": "0.1.4",
+        "@pangtou/host-sdk": "0.1.5",
+        "@pangtou/module-runtime": "0.1.5",
+        "@pangtou/shared": "0.1.5",
         "vue": "^3.5.29"
     },
     "devDependencies": {

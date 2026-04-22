@@ -2,7 +2,7 @@
     "id": "your-plugin",
     "code": "your-plugin",
     "name": "示例插件",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "develop": true,
     "type": "module",
     "description": "用于演示模块插件脚手架的最小实现。",
